@@ -11,4 +11,5 @@ class Narods(SqlAlchemyBase):
     info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     region = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     history = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    traditions = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     kitchen = sqlalchemy.Column(sqlalchemy.String, nullable=True)

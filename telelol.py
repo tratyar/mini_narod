@@ -1,5 +1,5 @@
 import telebot
-from regions import regions, image, info, narod, test, questions, narodIm
+from regions_dicts import regions, image, narod, test, questions, narodIm
 from DatBase import Db_work
 import weather
 import pymorphy3
@@ -76,7 +76,7 @@ def balllll(call):
 
 def set_narod_region(call, region):
     keyboard = telebot.types.InlineKeyboardMarkup()
-    data = db.ret_peopl(region + 1)
+    data = db.ret_reg_nar(region)
     for i in range(len(data)):
         keyboard.add(telebot.types.InlineKeyboardButton(text=f"{data[i]}", callback_data=f'narod_{data[i]}_{region}'))
     keyboard.add(telebot.types.InlineKeyboardButton(text=f"⏪ назад", callback_data=f'region_{region}_back'))
@@ -163,6 +163,7 @@ def open_reg(call):
     keyboard = telebot.types.InlineKeyboardMarkup()
     names = ['👨‍👩‍👧‍👦 Народы', '🧑‍🏭 промыслы', '🗺️ освоение', '🎞️ история', '🕐 настоящие', '🥞 блюда', '⭐ перспективы',
              "⏪ назад"]
+    db.reg_number(data)
     for i in range(0, 6, 2):
         a = telebot.types.InlineKeyboardButton(text=f"{names[i]}", callback_data=f'area_inf_{names[i]}_{data}')
         b = telebot.types.InlineKeyboardButton(text=f"{names[i + 1]}", callback_data=f'area_inf_{names[i + 1]}_{data}')
@@ -186,12 +187,10 @@ def open_reg_inf(call):
     if '👨‍👩‍👧‍👦 Народы' in data[0]:
         set_narod_region(call, regions[image[int(data[1])][1]])
         return
-    col = info[data[0]]
-    row = int(data[1]) + 1
     keyboard = telebot.types.InlineKeyboardMarkup()
     keyboard.add(telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'region_{data[1]}_back'))
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                          text=f'{db.ret_inf(col, row + 1)}', reply_markup=keyboard)
+                          text=f'{db.ret_regions(data[0])}', reply_markup=keyboard)
 
 
 @bot.message_handler(commands=["start", "restart"])
@@ -215,13 +214,12 @@ def start(message):
 def set_narod_menu(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
     names = list(narod.keys())
-    for i in range(0, 5, 3):
+    for i in range(0, 12, 3):
         a = telebot.types.InlineKeyboardButton(text=f"{names[i]}", callback_data=f'narod_{names[i]}')
         b = telebot.types.InlineKeyboardButton(text=f"{names[i + 1]}", callback_data=f'narod_{names[i + 1]}')
         c = telebot.types.InlineKeyboardButton(text=f"{names[i + 2]}", callback_data=f'narod_{names[i + 2]}')
         keyboard.add(a, b, c)
-    a = telebot.types.InlineKeyboardButton(text=f"{names[6]}", callback_data=f'narod_{names[6]}')
-    b = telebot.types.InlineKeyboardButton(text=f"{names[7]}", callback_data=f'narod_{names[7]}')
+    a = telebot.types.InlineKeyboardButton(text=f"{names[12]}", callback_data=f'narod_{names[12]}')
     keyboard.add(a, b, telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'main'))
     if message.__class__.__name__ == 'Message':
         bot.send_message(message.from_user.id, f'Выберите народ', reply_markup=keyboard)
@@ -268,7 +266,7 @@ def print_narod_info(call):
     keyboard = telebot.types.InlineKeyboardMarkup()
     keyboard.add(telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'narod_{type[0]}_back'))
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                          text=f'{db.ret_cherta(type[1], narod[type[0]])[0]}', reply_markup=keyboard)
+                          text=f'{db.ret_nar(type)}', reply_markup=keyboard)
 
 
 @bot.message_handler(func=lambda message: message.text == '📝 Тест')
