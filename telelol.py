@@ -186,12 +186,11 @@ def open_reg_inf(call):
     if '👨‍👩‍👧‍👦 Народы' in data[0]:
         set_narod_region(call, regions[image[int(data[1])][1]])
         return
-    col = info[data[0]]
-    row = int(data[1]) + 1
+    print(data)
     keyboard = telebot.types.InlineKeyboardMarkup()
     keyboard.add(telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'region_{data[1]}_back'))
     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                          text=f'{db.ret_inf(col, row + 1)}', reply_markup=keyboard)
+                          text=f'{db.ret_regions(int(data[1]) + 1)}', reply_markup=keyboard)
 
 
 @bot.message_handler(commands=["start", "restart"])
