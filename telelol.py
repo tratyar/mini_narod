@@ -1,6 +1,7 @@
 import telebot
 from regions import regions, image, info, narod, test, questions, narodIm
 from DatBase import Db_work
+import weather
 import pymorphy3
 
 db = Db_work()
@@ -155,6 +156,7 @@ def open_reg(call):
     cnt = call.data.split('_')
     data = int(cnt[1])
     region = image[data][1]
+    temper = weather.reg_weather(data)
     ret = False
     if len(cnt) == 3:
         ret = True
@@ -169,12 +171,12 @@ def open_reg(call):
                  telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'selecr_reg_back'))
     if ret:
         bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                              text=f'Что хотите узнать?', reply_markup=keyboard)
+                              text=f'{temper}\nЧто хотите узнать?', reply_markup=keyboard)
     else:
         bot.delete_message(call.from_user.id, call.message.message_id)
         res = bot.send_photo(call.from_user.id, open(f'regionIm\{image[data][0]}', 'rb'), caption=region)
         users[str(call.from_user.id)] = res.message_id
-        bot.send_message(call.from_user.id, f'Что хотите узнать?',
+        bot.send_message(call.from_user.id, f'{temper}\n\nЧто хотите узнать?',
                          reply_markup=keyboard)
 
 
@@ -192,11 +194,9 @@ def open_reg_inf(call):
                           text=f'{db.ret_inf(col, row + 1)}', reply_markup=keyboard)
 
 
-@bot.message_handler(commands=["start"])
+@bot.message_handler(commands=["start", "restart"])
 def start(message):
-    testing(message)
-    global flag
-    if flag:
+    if message.from_user.id not in statistic:
         keyboardgostart = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
         keyboardgostart.add(
             *[telebot.types.KeyboardButton(name) for name in ['🪙 Бонусы', '🚩 Выбрать регион', '👨‍👩‍👧‍👦 Народы',
@@ -206,7 +206,7 @@ def start(message):
                f' твои знания об Арктике  и за правильные ответы ты можешь получить бонусы,' \
                f' которые можно потратить у наших спонсоров для получения скидок и акций'
         bot.send_photo(message.chat.id, open(f'regionIm\startIm.jpg', 'rb'), caption=text, reply_markup=keyboardgostart)
-        flag = False
+    testing(message)
     set_main(message)
 
 
