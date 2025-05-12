@@ -121,9 +121,9 @@ def print_stat(message):
                              reply_markup=keyboard)
         else:
             bot.edit_message_text(chat_id=message.from_user.id, message_id=message.message.message_id,
-                                  text=f'Ваши результаты:\nБаллы: {el[1]}\nВсего твечего на вопросов: {el[2]}'
+                                  text=f'Ваши результаты:\nБаллы: {el[1]}\nВсего отвечено на вопросов: {el[2]}'
                                        f'\nВсего правильных ответов: {el[3]}\nКоличество раз открытия информации о'
-                                       f' регионе: {el[4]}\nКоличество раз открытия информации о народе {el[5]}',
+                                       f' регионе: {el[4]}\nКоличество раз открытия информации о народе: {el[5]}',
                                   reply_markup=keyboard)
 
 
@@ -220,7 +220,7 @@ def set_narod_menu(message):
         c = telebot.types.InlineKeyboardButton(text=f"{names[i + 2]}", callback_data=f'narod_{names[i + 2]}')
         keyboard.add(a, b, c)
     a = telebot.types.InlineKeyboardButton(text=f"{names[12]}", callback_data=f'narod_{names[12]}')
-    keyboard.add(a, b, telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'main'))
+    keyboard.add(a, telebot.types.InlineKeyboardButton(text="⏪ назад", callback_data=f'main'))
     if message.__class__.__name__ == 'Message':
         bot.send_message(message.from_user.id, f'Выберите народ', reply_markup=keyboard)
     else:
